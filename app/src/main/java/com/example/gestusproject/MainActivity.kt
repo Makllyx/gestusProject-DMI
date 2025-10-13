@@ -23,17 +23,30 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-
-            NavHost(
-                navController = navController,
-                startDestination = "login"
-            ) {
-                composable("login") {
-                    LoginScreen(navController) }
-                composable("signup") {
-                    SignupScreen(navController) }
-                composable("home") {
-                    HomeScreen(navController) }
+            GestusProjectTheme {
+                NavHost(
+                    navController = navController,
+                    startDestination = "login"
+                ) {
+                    composable("login") {
+                        LoginScreen(navController)
+                    }
+                    composable("signup") {
+                        SignupScreen(navController)
+                    }
+                    composable("home/{name}") { backStackEntry ->
+                        val nameArg = backStackEntry.arguments?.getString("name") ?: ""
+                        HomeScreen(navController = navController, userName = nameArg)
+                    }
+                    composable("gesture/{gestureId}") { backStackEntry ->
+                        val gestureId = backStackEntry.arguments?.getString("gestureId") ?: ""
+                        GestureDetailScreen(navController = navController, gestureId = gestureId)
+                    }
+                    composable("camera/{gestureId}") { backStackEntry ->
+                        val gestureId = backStackEntry.arguments?.getString("gestureId") ?: ""
+                        CameraScreen(navController = navController, gestureId = gestureId)
+                    }
+                }
             }
         }
     }
