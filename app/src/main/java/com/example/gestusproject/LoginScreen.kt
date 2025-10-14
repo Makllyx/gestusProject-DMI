@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import android.net.Uri
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
 
@@ -62,22 +63,27 @@ fun LoginScreen(navController: NavHostController){
                     val database = FirebaseDatabase.getInstance().reference.child("users")
 
                     database.get().addOnSuccessListener { data ->
-                        var userFound = false
+                        var matchedName: String? = null
                         for (user in data.children){
                             val userEmail = user.child("Correo Electronico").getValue(String::class.java)
+                                ?: user.child("email").getValue(String::class.java)
                             val userPassword = user.child("Contraseña").getValue(String::class.java)
+                                ?: user.child("password").getValue(String::class.java)
 
                             if (email == userEmail && password == userPassword) {
-                                userFound = true
-                                navController.navigate("home"){
-                                    popUpTo(0)
-                                }
+                                matchedName = user.child("Nombre").getValue(String::class.java)
+                                    ?: user.child("name").getValue(String::class.java)
                                 break
                             }
                         }
-                        if (!userFound) {
+                        if (matchedName != null) {
+                            val safeName = Uri.encode(matchedName)
+                            navController.navigate("home/$safeName"){ popUpTo(0) }
+                        } else {
                             error = "Credenciales incorrectas"
                         }
+                    }.addOnFailureListener {
+                        error = "Error de conexión"
                     }
                 }) {
                 Text("Iniciar Sesión")
