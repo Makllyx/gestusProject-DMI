@@ -3,21 +3,27 @@ package com.example.gestusproject
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.SystemClock
+import android.util.Size
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,13 +34,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
+import com.example.gestusproject.ui.components.BottomChat
+import com.example.gestusproject.ui.theme.SuccessGreen
+import com.example.gestusproject.ui.theme.ErrorRed
+import com.google.mediapipe.framework.image.BitmapImageBuilder
+import com.google.mediapipe.tasks.core.BaseOptions
+import com.google.mediapipe.tasks.vision.core.ImageProcessingOptions
+import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizer
+import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizerResult
+import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizerOptions
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -56,42 +70,53 @@ fun CameraScreen(navController: NavHostController, gestureId: String) {
         if (!hasCameraPermission) permissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
-    var validationResult by remember { mutableStateOf<Boolean?>(null) }
+    // Estado de resultados del gesto
+    var topGestureLabel by remember { mutableStateOf<String?>(null) }
+    var showChat by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Text(text = "Recrear: ${gestureId}", style = MaterialTheme.typography.headlineSmall)
-
         if (hasCameraPermission) {
-            CameraPreview(lifecycleOwner = lifecycleOwner)
+            CameraPreviewWithGestures(
+                lifecycleOwner = lifecycleOwner,
+                onGestureResult = { result ->
+                    val label = result.topCategoryNameOrNull()
+                    if (label != null && label != topGestureLabel) {
+                        topGestureLabel = label
+                        showChat = true
+                    }
+                }
+            )
         } else {
-            Text("Se requiere permiso de cámara")
-            Button(onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) }) {
-                Text("Conceder permiso")
-            }
+            Text("Se requiere permiso de cámara", style = MaterialTheme.typography.titleMedium)
         }
 
-        Button(onClick = {
-            // TODO: Reemplazar con validación real del gesto
-            validationResult = (0..1).random() == 1
-        }) {
-            Text("Validar gesto")
-        }
+        val isCorrect = isGestureCorrectForId(gestureId = gestureId, detectedLabel = topGestureLabel)
+        val message = if (isCorrect) "Hola correcto 44C" else "Hola incorrecto 6AB"
 
-        validationResult?.let { success ->
-            val color = if (success) Color(0xFF2E7D32) else Color(0xFFC62828)
-            val text = if (success) "Correcto" else "Incorrecto"
-            Text(text = text, color = color, style = MaterialTheme.typography.titleLarge)
+        AnimatedVisibility(
+            visible = showChat,
+            enter = slideInVertically(initialOffsetY = { it / 2 }, animationSpec = tween(220)) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { it / 2 }, animationSpec = tween(220)) + fadeOut()
+        ) {
+            BottomChat(
+                text = message,
+                success = isCorrect
+            )
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-private fun CameraPreview(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
+private fun CameraPreviewWithGestures(
+    lifecycleOwner: androidx.lifecycle.LifecycleOwner,
+    onGestureResult: (GestureRecognizerResult) -> Unit
+) {
     val context = LocalContext.current
 
     AndroidView(
@@ -106,19 +131,95 @@ private fun CameraPreview(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
 
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                val analysis = ImageAnalysis.Builder()
+                    .setTargetResolution(Size(640, 480))
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
+                    .build()
+
+                val gestureRecognizer = createGestureRecognizer(ctx) { result ->
+                    onGestureResult(result)
+                }
+
+                analysis.setAnalyzer(ContextCompat.getMainExecutor(ctx)) { imageProxy ->
+                    try {
+                        val rotation = imageProxy.imageInfo.rotationDegrees
+                        val buffer = imageProxy.planes[0].buffer
+                        buffer.rewind()
+                        val bitmap = android.graphics.Bitmap.createBitmap(
+                            imageProxy.width,
+                            imageProxy.height,
+                            android.graphics.Bitmap.Config.ARGB_8888
+                        )
+                        bitmap.copyPixelsFromBuffer(buffer)
+
+                        val mpImage = BitmapImageBuilder(bitmap).build()
+                        val options = ImageProcessingOptions.builder()
+                            .setRotationDegrees(rotation)
+                            .build()
+                        gestureRecognizer.recognizeAsync(
+                            mpImage,
+                            options,
+                            SystemClock.uptimeMillis()
+                        )
+                    } catch (_: Exception) {
+                        // No-op; errores del frame actual se ignoran para mantener perf
+                    } finally {
+                        imageProxy.close()
+                    }
+                }
+
+                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
                 try {
                     cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview)
-                } catch (_: Exception) {
-                }
+                    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, analysis)
+                } catch (_: Exception) { }
             }, ContextCompat.getMainExecutor(ctx))
 
             previewView
         },
         modifier = Modifier
             .fillMaxWidth()
-            .height(360.dp)
+            .height(420.dp)
     )
+}
+
+private fun createGestureRecognizer(
+    context: android.content.Context,
+    onResult: (GestureRecognizerResult) -> Unit
+): GestureRecognizer {
+    val baseOptions = BaseOptions.builder()
+        .setModelAssetPath("gesture_recognizer.task") // Requiere colocar el modelo en assets/
+        .build()
+
+    val options = GestureRecognizerOptions.builder()
+        .setBaseOptions(baseOptions)
+        .setRunningMode(GestureRecognizerOptions.RunningMode.LIVE_STREAM)
+        .setResultListener { result, _, _ -> onResult(result) }
+        .setErrorListener { _ -> /* puedes reportar el error en UI si quieres */ }
+        .build()
+
+    return GestureRecognizer.createFromOptions(context, options)
+}
+
+private fun GestureRecognizerResult.topCategoryNameOrNull(): String? {
+    val categories = gestures()
+    if (categories.isEmpty()) return null
+    val top = categories.firstOrNull()?.maxByOrNull { it.score() } ?: return null
+    return top.categoryName()
+}
+
+private fun isGestureCorrectForId(gestureId: String, detectedLabel: String?): Boolean {
+    if (detectedLabel == null) return false
+    // Mapea ids a gestos de MediaPipe (ejemplos): Open_Palm, Closed_Fist, Pointing_Up
+    val expected = when (gestureId.lowercase()) {
+        "hola" -> setOf("Open_Palm")
+        "si" -> setOf("Pointing_Up")
+        "no" -> setOf("Closed_Fist")
+        "gracias", "porfavor" -> setOf("Open_Palm")
+        else -> setOf("Open_Palm")
+    }
+    // Compara con etiqueta principal detectada
+    return expected.any { detectedLabel.contains(it, ignoreCase = true) }
 }

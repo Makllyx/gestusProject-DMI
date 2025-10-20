@@ -69,6 +69,11 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-database-ktx")
 
+    // MediaPipe Tasks - Gesture Recognizer
+    implementation(libs.mediapipe.tasks.vision)
+    // Optional: HTTP client in case you later fetch models dynamically
+    implementation(libs.okhttp)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
