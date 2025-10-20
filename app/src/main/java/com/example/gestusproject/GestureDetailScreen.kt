@@ -21,12 +21,12 @@ import androidx.navigation.NavHostController
 @Composable
 fun GestureDetailScreen(navController: NavHostController, gestureId: String) {
     val gesture = when (gestureId) {
-        "hola" -> Gesture("hola", "Hola", "Saludo básico en LSM.", R.mipmap.ic_launcher)
-        "gracias" -> Gesture("gracias", "Gracias", "Gesto para agradecer.", R.mipmap.ic_launcher_round)
-        "porfavor" -> Gesture("porfavor", "Por favor", "Gesto de cortesía.", R.mipmap.ic_launcher)
-        "si" -> Gesture("si", "Sí", "Afirmación.", R.mipmap.ic_launcher_round)
-        "no" -> Gesture("no", "No", "Negación.", R.mipmap.ic_launcher)
-        else -> Gesture(gestureId, gestureId, "", R.mipmap.ic_launcher)
+        "hola" -> Gesture("hola", "Hola", "Saludo básico en LSM.", R.drawable.hola)
+        "gracias" -> Gesture("gracias", "Gracias", "Gesto para agradecer.", R.drawable.gracias)
+        "porfavor" -> Gesture("porfavor", "Por favor", "Gesto de cortesía.", R.drawable.por_favor)
+        "si" -> Gesture("si", "Sí", "Afirmación.", R.drawable.si)
+        "no" -> Gesture("no", "No", "Negación.", R.drawable.no)
+        else -> Gesture(gestureId, gestureId, "", R.drawable.hola) // puedes dejar hola como default
     }
 
     Column(

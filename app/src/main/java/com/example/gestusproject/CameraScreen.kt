@@ -2,8 +2,10 @@ package com.example.gestusproject
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -28,12 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CameraScreen(navController: NavHostController, gestureId: String) {
     val context = LocalContext.current
@@ -86,6 +89,7 @@ fun CameraScreen(navController: NavHostController, gestureId: String) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun CameraPreview(lifecycleOwner: androidx.lifecycle.LifecycleOwner) {
     val context = LocalContext.current

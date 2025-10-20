@@ -3,14 +3,18 @@ package com.example.gestusproject
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,20 +34,22 @@ data class Gesture(
     val imageRes: Int
 )
 
-// Muestra: usa recursos existentes de mipmap como placeholder
+// Lista de ejemplos (usa tus recursos reales)
 private val sampleGestures = listOf(
-    Gesture("hola", "Hola", "Saludo básico en LSM.", R.mipmap.ic_launcher),
-    Gesture("gracias", "Gracias", "Gesto para agradecer.", R.mipmap.ic_launcher_round),
-    Gesture("porfavor", "Por favor", "Gesto de cortesía.", R.mipmap.ic_launcher),
-    Gesture("si", "Sí", "Afirmación.", R.mipmap.ic_launcher_round),
-    Gesture("no", "No", "Negación.", R.mipmap.ic_launcher)
+    Gesture("hola", "Hola", "Saludo básico en LSM.", R.drawable.hola),
+    Gesture("gracias", "Gracias", "Gesto para agradecer.", R.drawable.gracias),
+    Gesture("porfavor", "Por favor", "Gesto de cortesía.", R.drawable.por_favor),
+    Gesture("si", "Sí", "Afirmación.", R.drawable.si),
+    Gesture("no", "No", "Negación.", R.drawable.no)
 )
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController, userName: String){
+fun HomeScreen(navController: NavHostController, userName: String) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = "Bienvenido @${userName}") })
+            TopAppBar(title = { Text(text = "Bienvenido @$userName") })
         }
     ) { innerPadding ->
         LazyVerticalGrid(
@@ -67,20 +73,26 @@ fun HomeScreen(navController: NavHostController, userName: String){
 @Composable
 private fun GestureCard(gesture: Gesture, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = Modifier
+            .clickable { onClick() }
+            .fillMaxWidth()
+            .height(180.dp), // Fijamos altura para evitar errores de medida
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Image(
-            painter = painterResource(id = gesture.imageRes),
-            contentDescription = gesture.title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-        )
-        Text(
-            text = gesture.title,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(12.dp)
-        )
+        Column {
+            Image(
+                painter = painterResource(id = gesture.imageRes),
+                contentDescription = gesture.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(100.dp)
+                    .fillMaxWidth()
+            )
+            Text(
+                text = gesture.title,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            )
+        }
     }
 }
