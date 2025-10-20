@@ -1,8 +1,10 @@
 package com.example.gestusproject
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,11 +23,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.gestusproject.ui.theme.NavyDark
+import com.example.gestusproject.ui.theme.NavyLight
+import com.example.gestusproject.ui.theme.OrangePrimary
 
 data class Gesture(
     val id: String,
@@ -52,18 +58,28 @@ fun HomeScreen(navController: NavHostController, userName: String) {
             TopAppBar(title = { Text(text = "Bienvenido @$userName") })
         }
     ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 160.dp),
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(NavyDark, NavyLight)
+                    )
+                )
+                .padding(innerPadding)
         ) {
-            items(sampleGestures) { gesture ->
-                GestureCard(gesture = gesture) {
-                    navController.navigate("gesture/${gesture.id}")
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 160.dp),
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(sampleGestures) { gesture ->
+                    GestureCard(gesture = gesture) {
+                        navController.navigate("gesture/${gesture.id}")
+                    }
                 }
             }
         }
@@ -76,8 +92,9 @@ private fun GestureCard(gesture: Gesture, onClick: () -> Unit) {
         modifier = Modifier
             .clickable { onClick() }
             .fillMaxWidth()
-            .height(180.dp), // Fijamos altura para evitar errores de medida
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .height(180.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column {
             Image(
@@ -91,7 +108,9 @@ private fun GestureCard(gesture: Gesture, onClick: () -> Unit) {
             Text(
                 text = gesture.title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
