@@ -2,6 +2,7 @@ package com.example.gestusproject
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.SystemClock
 import android.util.Size
@@ -26,12 +27,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,8 +37,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.example.gestusproject.ui.components.BottomChat
-import com.example.gestusproject.ui.theme.SuccessGreen
-import com.example.gestusproject.ui.theme.ErrorRed
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.vision.core.ImageProcessingOptions
@@ -58,9 +52,13 @@ fun CameraScreen(navController: NavHostController, gestureId: String) {
 
     var hasCameraPermission by remember {
         mutableStateOf(
-            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
         )
     }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted -> hasCameraPermission = granted }
@@ -70,7 +68,6 @@ fun CameraScreen(navController: NavHostController, gestureId: String) {
         if (!hasCameraPermission) permissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
-    // Estado de resultados del gesto
     var topGestureLabel by remember { mutableStateOf<String?>(null) }
     var showChat by remember { mutableStateOf(false) }
 
@@ -92,11 +89,16 @@ fun CameraScreen(navController: NavHostController, gestureId: String) {
                 }
             )
         } else {
-            Text("Se requiere permiso de cámara", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Se requiere permiso de cámara",
+                style = MaterialTheme.typography.titleMedium
+            )
         }
 
-        val isCorrect = isGestureCorrectForId(gestureId = gestureId, detectedLabel = topGestureLabel)
-        val message = if (isCorrect) "Hola correcto 44C" else "Hola incorrecto 6AB"
+        val isCorrect =
+            isGestureCorrectForId(gestureId = gestureId, detectedLabel = topGestureLabel)
+        val message =
+            if (isCorrect) "Hola correcto ✋" else "Hola incorrecto ❌"
 
         AnimatedVisibility(
             visible = showChat,
@@ -122,8 +124,8 @@ private fun CameraPreviewWithGestures(
     AndroidView(
         factory = { ctx ->
             val previewView = PreviewView(ctx)
-
             val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
+
             cameraProviderFuture.addListener({
                 val cameraProvider = cameraProviderFuture.get()
 
@@ -146,10 +148,11 @@ private fun CameraPreviewWithGestures(
                         val rotation = imageProxy.imageInfo.rotationDegrees
                         val buffer = imageProxy.planes[0].buffer
                         buffer.rewind()
-                        val bitmap = android.graphics.Bitmap.createBitmap(
+
+                        val bitmap = Bitmap.createBitmap(
                             imageProxy.width,
                             imageProxy.height,
-                            android.graphics.Bitmap.Config.ARGB_8888
+                            Bitmap.Config.ARGB_8888
                         )
                         bitmap.copyPixelsFromBuffer(buffer)
 
@@ -157,13 +160,11 @@ private fun CameraPreviewWithGestures(
                         val options = ImageProcessingOptions.builder()
                             .setRotationDegrees(rotation)
                             .build()
-                        gestureRecognizer.recognizeAsync(
-                            mpImage,
-                            options,
-                            SystemClock.uptimeMillis()
-                        )
+
+                        // ✅ Esta es la forma correcta en 0.20230731:
+                        gestureRecognizer.recognizeAsync(mpImage, options)
                     } catch (_: Exception) {
-                        // No-op; errores del frame actual se ignoran para mantener perf
+                        // Ignorar errores del frame
                     } finally {
                         imageProxy.close()
                     }
@@ -174,7 +175,8 @@ private fun CameraPreviewWithGestures(
                 try {
                     cameraProvider.unbindAll()
                     cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, analysis)
-                } catch (_: Exception) { }
+                } catch (_: Exception) {
+                }
             }, ContextCompat.getMainExecutor(ctx))
 
             previewView
@@ -190,14 +192,13 @@ private fun createGestureRecognizer(
     onResult: (GestureRecognizerResult) -> Unit
 ): GestureRecognizer {
     val baseOptions = BaseOptions.builder()
-        .setModelAssetPath("gesture_recognizer.task") // Requiere colocar el modelo en assets/
+        .setModelAssetPath("gesture_recognizer.task")
         .build()
 
     val options = GestureRecognizerOptions.builder()
         .setBaseOptions(baseOptions)
-        .setRunningMode(GestureRecognizerOptions.RunningMode.LIVE_STREAM)
-        .setResultListener { result, _, _ -> onResult(result) }
-        .setErrorListener { _ -> /* puedes reportar el error en UI si quieres */ }
+        .setResultListener { result -> onResult(result) }
+        .setErrorListener { e -> e?.printStackTrace() }
         .build()
 
     return GestureRecognizer.createFromOptions(context, options)
@@ -212,7 +213,6 @@ private fun GestureRecognizerResult.topCategoryNameOrNull(): String? {
 
 private fun isGestureCorrectForId(gestureId: String, detectedLabel: String?): Boolean {
     if (detectedLabel == null) return false
-    // Mapea ids a gestos de MediaPipe (ejemplos): Open_Palm, Closed_Fist, Pointing_Up
     val expected = when (gestureId.lowercase()) {
         "hola" -> setOf("Open_Palm")
         "si" -> setOf("Pointing_Up")
@@ -220,6 +220,5 @@ private fun isGestureCorrectForId(gestureId: String, detectedLabel: String?): Bo
         "gracias", "porfavor" -> setOf("Open_Palm")
         else -> setOf("Open_Palm")
     }
-    // Compara con etiqueta principal detectada
     return expected.any { detectedLabel.contains(it, ignoreCase = true) }
 }

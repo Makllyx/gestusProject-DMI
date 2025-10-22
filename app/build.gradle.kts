@@ -63,16 +63,22 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
+
+    // Firebase
     implementation(libs.firebase.auth)
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
-    implementation("androidx.navigation:navigation-compose:2.8.3")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-database-ktx")
 
-    // MediaPipe Tasks - Gesture Recognizer
-    implementation(libs.mediapipe.tasks.vision)
-    // Optional: HTTP client in case you later fetch models dynamically
+    // ✅ MediaPipe Tasks - Gesture Recognizer (versión correcta)
+    implementation("com.google.mediapipe:tasks-vision:0.20230731")
+
+    // Optional: HTTP client if you fetch models dynamically
     implementation(libs.okhttp)
+    implementation(libs.support.annotations)
+    implementation(libs.support.v4)
+    implementation(libs.androidx.lifecycle.extensions)
+    implementation(libs.androidx.navigation.runtime.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
