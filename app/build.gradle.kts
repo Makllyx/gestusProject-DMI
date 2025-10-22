@@ -8,12 +8,12 @@ plugins {
 }
 android {
     namespace = "com.example.gestusproject"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.gestusproject"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -56,7 +56,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.foundation)
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
 
     // CameraX
     implementation(libs.androidx.camera.core)
@@ -64,21 +64,17 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
-    // Firebase
-    implementation(libs.firebase.auth)
+    // Firebase (usando BOM + artefactos KTX)
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-database-ktx")
 
-    // ✅ MediaPipe Tasks - Gesture Recognizer (versión correcta)
-    implementation("com.google.mediapipe:tasks-vision:0.20230731")
+    // MediaPipe Tasks - Gesture Recognizer
+    implementation(libs.mediapipe.tasks.vision)
 
     // Optional: HTTP client if you fetch models dynamically
     implementation(libs.okhttp)
-    implementation(libs.support.annotations)
-    implementation(libs.support.v4)
-    implementation(libs.androidx.lifecycle.extensions)
-    implementation(libs.androidx.navigation.runtime.android)
+    implementation(libs.androidx.navigation.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
