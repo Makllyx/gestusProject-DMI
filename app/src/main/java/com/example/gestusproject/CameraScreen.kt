@@ -39,7 +39,7 @@ import androidx.navigation.NavHostController
 import com.example.gestusproject.ui.components.BottomChat
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.tasks.core.BaseOptions
-import com.google.mediapipe.tasks.vision.core.ImageProcessingOptions
+import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizer
 import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizerResult
 import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizerOptions
@@ -156,13 +156,11 @@ private fun CameraPreviewWithGestures(
                         )
                         bitmap.copyPixelsFromBuffer(buffer)
 
-                        val mpImage = BitmapImageBuilder(bitmap).build()
-                        val options = ImageProcessingOptions.builder()
-                            .setRotationDegrees(rotation)
-                            .build()
-
-                        // ✅ Esta es la forma correcta en 0.20230731:
-                        gestureRecognizer.recognizeAsync(mpImage, options)
+                        val rotatedBitmap =
+                            if (rotation != 0) rotateBitmap(bitmap, rotation.toFloat()) else bitmap
+                        val mpImage = BitmapImageBuilder(rotatedBitmap).build()
+                        // Live stream requiere timestamp monotonico
+                        gestureRecognizer.recognizeAsync(mpImage, SystemClock.uptimeMillis())
                     } catch (_: Exception) {
                         // Ignorar errores del frame
                     } finally {
@@ -197,6 +195,7 @@ private fun createGestureRecognizer(
 
     val options = GestureRecognizerOptions.builder()
         .setBaseOptions(baseOptions)
+        .setRunningMode(RunningMode.LIVE_STREAM)
         .setResultListener { result -> onResult(result) }
         .setErrorListener { e -> e?.printStackTrace() }
         .build()
@@ -221,4 +220,9 @@ private fun isGestureCorrectForId(gestureId: String, detectedLabel: String?): Bo
         else -> setOf("Open_Palm")
     }
     return expected.any { detectedLabel.contains(it, ignoreCase = true) }
+}
+
+private fun rotateBitmap(source: Bitmap, angleDegrees: Float): Bitmap {
+    val matrix = android.graphics.Matrix().apply { postRotate(angleDegrees) }
+    return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
 }
