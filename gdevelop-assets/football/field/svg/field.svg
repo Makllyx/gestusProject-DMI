@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grass" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#4CAF50"/>
+      <stop offset="100%" stop-color="#2E7D32"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#grass)"/>
+  <!-- Líneas del campo -->
+  <g stroke="#FFFFFF" stroke-width="6" fill="none" opacity="0.95">
+    <rect x="80" y="60" width="1760" height="960"/>
+    <line x1="960" y1="60" x2="960" y2="1020"/>
+    <!-- Círculo central -->
+    <circle cx="960" cy="540" r="90"/>
+    <circle cx="960" cy="540" r="4" fill="#fff"/>
+    <!-- Áreas y porterías -->
+    <!-- Izquierda -->
+    <rect x="80" y="300" width="180" height="480"/>
+    <rect x="80" y="420" width="60" height="240"/>
+    <circle cx="260" cy="540" r="1"/>
+    <!-- Derecha -->
+    <rect x="1660" y="300" width="180" height="480"/>
+    <rect x="1780" y="420" width="60" height="240"/>
+    <circle cx="1660" cy="540" r="1"/>
+    <!-- Esquinas -->
+    <path d="M80,60 a20,20 0 0 0 20,20"/>
+    <path d="M1840,60 a20,20 0 0 1 -20,20"/>
+    <path d="M80,1020 a20,20 0 0 1 20,-20"/>
+    <path d="M1840,1020 a20,20 0 0 0 -20,-20"/>
+  </g>
+</svg>
