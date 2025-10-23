@@ -41,8 +41,9 @@ import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.tasks.core.BaseOptions
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizer
+import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizer.GestureRecognizerOptions
 import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizerResult
-import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizerOptions
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -134,7 +135,7 @@ private fun CameraPreviewWithGestures(
                 }
 
                 val analysis = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(640, 480))
+                    .setDefaultResolution(Size(640, 480))  // Reemplaza setTargetResolution
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                     .build()
@@ -196,12 +197,19 @@ private fun createGestureRecognizer(
     val options = GestureRecognizerOptions.builder()
         .setBaseOptions(baseOptions)
         .setRunningMode(RunningMode.LIVE_STREAM)
-        .setResultListener { result -> onResult(result) }
-        .setErrorListener { e -> e?.printStackTrace() }
+        // 👇 MediaPipe espera una función con 2 parámetros: (result, mpImage)
+        .setResultListener { result: GestureRecognizerResult, _: com.google.mediapipe.framework.image.MPImage ->
+            onResult(result)
+        }
+        // 👇 Error listener con tipo explícito
+        .setErrorListener { e: java.lang.Exception? ->
+            e?.printStackTrace()
+        }
         .build()
 
     return GestureRecognizer.createFromOptions(context, options)
 }
+
 
 private fun GestureRecognizerResult.topCategoryNameOrNull(): String? {
     val categories = gestures()

@@ -1,23 +1,30 @@
-// app/build.gradle.kts
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.gms.google.services) // This is correct
+    alias(libs.plugins.google.gms.google.services)
 }
+
 android {
     namespace = "com.example.gestusproject"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.gestusproject"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // 👇 Agrega esta línea si usas modelos .task en assets/
+        sourceSets {
+            getByName("main") {
+                assets.srcDirs("src/main/assets")
+            }
+        }
+
     }
 
     buildTypes {
@@ -64,17 +71,18 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
-    // Firebase (usando BOM + artefactos KTX)
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-database-ktx")
 
-    // MediaPipe Tasks - Gesture Recognizer
-    implementation(libs.mediapipe.tasks.vision)
+    // ✅ MediaPipe Tasks (versión estable)
+    implementation("com.google.mediapipe:tasks-vision:0.10.14")
 
-    // Optional: HTTP client if you fetch models dynamically
+    // Optional: HTTP client
     implementation(libs.okhttp)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.auth)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -84,3 +92,4 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+
