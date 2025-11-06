@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Text Styles Base -->
+    <style name="AppTextStyle">
+        <item name="android:textColor">@color/navy_dark</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    
+    <!-- Text Style Variants -->
+    <style name="AppTextStyle.Headline">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="AppTextStyle.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="AppTextStyle.Body">
+        <item name="android:textSize">16sp</item>
+    </style>
+    
+    <!-- Button Styles -->
+    <style name="ButtonStyle.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/orange_primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <!-- Card Styles Base -->
+    <style name="CardStyle">
+        <item name="cardBackgroundColor">@android:color/white</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">4dp</item>
+    </style>
+    
+    <!-- Card Style Variants -->
+    <style name="CardStyle.Modern">
+        <item name="cardBackgroundColor">@android:color/white</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">8dp</item>
+    </style>
+    
+    <!-- Black theme for Camera -->
+    <style name="Theme.Black" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+</resources>
