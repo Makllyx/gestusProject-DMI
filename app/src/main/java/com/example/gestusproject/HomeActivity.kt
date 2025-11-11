@@ -32,7 +32,9 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        val userName = intent.getStringExtra("userName") ?: "Usuario"
+        // Decodificar el nombre del usuario que viene codificado
+        val encodedUserName = intent.getStringExtra("userName") ?: "Usuario"
+        val userName = android.net.Uri.decode(encodedUserName)
         
         setupToolbar(userName)
         setupRecyclerView()
