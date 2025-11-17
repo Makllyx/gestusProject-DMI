@@ -23,12 +23,12 @@
             <!-- Logo -->
             <ImageView
                 android:id="@+id/ivLogo"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="278dp"
+                android:layout_height="114dp"
                 android:layout_marginTop="40dp"
-                android:contentDescription="Logo de Gestus - Configura tu PIN de seguridad"
+                android:contentDescription="Logo de Gestus - Aprende lengua de señas"
                 android:elevation="8dp"
-                android:src="@drawable/logo_gestus"
+                android:src="@drawable/logo_gestus_largo"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

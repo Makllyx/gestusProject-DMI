@@ -15,7 +15,43 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <LinearLayout
+            android:id="@+id/layoutPermissionInfo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/gradient_background"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@android:drawable/ic_menu_camera" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Se requiere permiso de cámara"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPermissionInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Para reconocer gestos necesitamos acceso a tu cámara"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </androidx.camera.view.PreviewView>
 
     <!-- Overlay - Gesture Info -->
     <com.google.android.material.card.MaterialCardView
@@ -137,6 +173,7 @@
 
             <TextView
                 android:id="@+id/tvGestureScore"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -157,55 +194,26 @@
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Permission Info -->
-    <LinearLayout
-        android:id="@+id/layoutPermissionInfo"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/gradient_background"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@android:drawable/ic_menu_camera" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Se requiere permiso de cámara"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvPermissionInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Para reconocer gestos necesitamos acceso a tu cámara"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-    </LinearLayout>
-    
-    <!-- Botón de cierre -->
+    <!-- Botón de cierre (MOVIDO AL FINAL PARA QUE QUEDE ARRIBA DE TODO) -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabClose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="2dp"
+        android:contentDescription="Cerrar cámara"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
+
         app:backgroundTint="@color/orange_primary"
         app:tint="@color/white"
+
+        android:elevation="16dp"
+        android:translationZ="32dp"
+
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="Cerrar cámara" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
