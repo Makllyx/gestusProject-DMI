@@ -22,9 +22,7 @@ import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizer
 import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizer.GestureRecognizerOptions
 import com.google.mediapipe.tasks.vision.gesturerecognizer.GestureRecognizerResult
-import java.util.Locale
 import java.util.concurrent.Executors
-import kotlin.math.abs
 
 class CameraActivity : AppCompatActivity() {
 
@@ -39,10 +37,8 @@ class CameraActivity : AppCompatActivity() {
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val database = FirebaseDatabase.getInstance().reference
 
-    // NUEVAS VARIABLES
-    private var bestScoreInWindow: Float = 0f
-    private var lastSavedTimestamp = 0L
-    private val saveIntervalMs = 10_000L  // 10 segundos
+    private var lastSavedLabel: String? = null
+    private var lastSavedCorrectState: Boolean = false
 
     private fun formatPercentage(score: Float): String {
         val percentage = (score * 100).coerceIn(0f, 100f)
@@ -86,10 +82,12 @@ class CameraActivity : AppCompatActivity() {
 
         val instructions = when (gestureId.lowercase()) {
             "hola" -> "Muestra tu mano abierta con la palma hacia la cámara"
-            "si" -> "Apunta hacia arriba con tu dedo índice"
-            "no" -> "Cierra tu mano en un puño"
-            "gracias" -> "Muestra tu mano abierta"
-            "porfavor" -> "Muestra tu mano abierta"
+            "si" -> "Cierra tu mano en un puño"
+            "no" -> "Muestra tu pulgar hacia abajo"
+            "bien" -> "Muestra tu pulgar hacia arriba"
+            "uno" -> "Apunta hacia arriba con tu dedo índice"
+            "dos" -> "Muestra el gesto de victoria (índice y medio)"
+            "te_amo" -> "Muestra el gesto de te amo (pulgar, índice y meñique extendidos)"
             else -> "Mantén tu mano visible en la cámara"
         }
         binding.tvGestureInstructions.text = instructions
@@ -201,25 +199,22 @@ class CameraActivity : AppCompatActivity() {
             topGestureLabel = label
             topGestureScore = score
             showChat = true
-            updateFeedback()
 
             val isCorrect = isGestureCorrectForId(gestureId, label)
+            updateFeedback()
 
-            // ACTUALIZAR SCORE MÁXIMO
-            if (isCorrect && score > bestScoreInWindow) {
-                bestScoreInWindow = score
-            }
+            if (isCorrect) {
+                val finalLabel = if (gestureId.equals("hola", ignoreCase = true)) "Open_Palm" else label
 
-            // CHECAR SI YA PASARON 10 SEGUNDOS
-            val now = System.currentTimeMillis()
-            if (isCorrect && now - lastSavedTimestamp >= saveIntervalMs) {
-
-                // GUARDAR SOLO EL MEJOR
-                saveGestureAttempt(label, bestScoreInWindow, true)
-
-                // REINICIAR
-                bestScoreInWindow = 0f
-                lastSavedTimestamp = now
+                if (lastSavedLabel != finalLabel || !lastSavedCorrectState) {
+                    saveGestureAttempt(finalLabel, score, true)
+                    lastSavedLabel = finalLabel
+                    lastSavedCorrectState = true
+                }
+            } else {
+                if (lastSavedCorrectState) {
+                    lastSavedCorrectState = false
+                }
             }
 
             // Mostrar mensaje verde
@@ -281,8 +276,10 @@ class CameraActivity : AppCompatActivity() {
             "hola" -> "Hola"
             "si" -> "Sí"
             "no" -> "No"
-            "gracias" -> "Gracias"
-            "porfavor" -> "Por favor"
+            "bien" -> "Bien"
+            "uno" -> "Uno"
+            "dos" -> "Dos"
+            "te_amo" -> "Te Amo"
             else -> gestureId.replaceFirstChar { it.uppercase() }
         }
     }
@@ -290,11 +287,13 @@ class CameraActivity : AppCompatActivity() {
     private fun getExpectedGesturesForId(gestureId: String): Set<String> {
         return when (gestureId.lowercase()) {
             "hola" -> setOf("Open_Palm")
-            "si" -> setOf("Pointing_Up")
-            "no" -> setOf("Closed_Fist")
-            "gracias" -> setOf("Open_Palm")
-            "porfavor" -> setOf("Open_Palm")
-            else -> setOf("Open_Palm")
+            "si" -> setOf("Closed_Fist")
+            "no" -> setOf("Thumb_Down")
+            "bien" -> setOf("Thumb_Up")
+            "uno" -> setOf("Pointing_Up")
+            "dos" -> setOf("Victory")
+            "te_amo" -> setOf("ILoveYou")
+            else -> emptySet()
         }
     }
 
@@ -315,6 +314,7 @@ class CameraActivity : AppCompatActivity() {
         val attemptData = mapOf(
             "gestureId" to gestureId,
             "detectedLabel" to label,
+            "score" to score, // ← ESTA ES LA LÍNEA NUEVA
             "percentage" to (score * 100f),
             "isCorrect" to isCorrect,
             "timestamp" to System.currentTimeMillis()
@@ -322,6 +322,7 @@ class CameraActivity : AppCompatActivity() {
 
         attemptRef.setValue(attemptData)
     }
+
 
     private fun rotateBitmap(source: Bitmap, angleDegrees: Float): Bitmap {
         val matrix = android.graphics.Matrix().apply { postRotate(angleDegrees) }

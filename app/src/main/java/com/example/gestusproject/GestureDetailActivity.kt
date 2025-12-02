@@ -10,11 +10,13 @@ class GestureDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityGestureDetailBinding
     
     private val gestures = mapOf(
-        "hola" to Gesture("hola", "Hola", "Saludo básico en LSM.", R.drawable.hola),
-        "gracias" to Gesture("gracias", "Gracias", "Gesto para agradecer.", R.drawable.gracias),
-        "porfavor" to Gesture("porfavor", "Por favor", "Gesto de cortesía.", R.drawable.por_favor),
-        "si" to Gesture("si", "Sí", "Afirmación.", R.drawable.si),
-        "no" to Gesture("no", "No", "Negación.", R.drawable.no)
+        "hola" to Gesture("hola", "Hola", "Saludo básico en LSM. Muestra tu mano abierta y muévela lateralmente.", R.drawable.hola_gesto),
+        "si" to Gesture("si", "Sí", "Afirmación. Cierra tu puño y muévelo verticalmente.", R.drawable.si_gesto),
+        "no" to Gesture("no", "No", "Negación. Muestra tu pulgar hacia abajo.", R.drawable.no_gesto),
+        "bien" to Gesture("bien", "Bien", "Aprobación. Muestra tu pulgar hacia arriba.", R.drawable.bien_gesto),
+        "uno" to Gesture("uno", "Uno", "Número uno. Apunta hacia arriba con tu dedo índice.", R.drawable.uno_gesto),
+        "dos" to Gesture("dos", "Dos", "Número dos. Muestra el gesto de victoria.", R.drawable.dos_gesto),
+        "te_amo" to Gesture("te_amo", "Te Amo", "Expresión de amor. Muestra el gesto de te amo.", R.drawable.teamo_gesto)
     )
     
     data class Gesture(

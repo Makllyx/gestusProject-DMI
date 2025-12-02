@@ -159,3 +159,4 @@ El proyecto ahora usa arquitectura Android tradicional con XML y ViewBinding, ma
 
 
 
+

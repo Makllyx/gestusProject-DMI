@@ -13,11 +13,13 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var gestureAdapter: GestureAdapter
     
     private val gestures = listOf(
-        Gesture("hola", "Hola", "Saludo básico en LSM.", R.drawable.hola),
-        Gesture("gracias", "Gracias", "Gesto para agradecer.", R.drawable.gracias),
-        Gesture("porfavor", "Por favor", "Gesto de cortesía.", R.drawable.por_favor),
-        Gesture("si", "Sí", "Afirmación.", R.drawable.si),
-        Gesture("no", "No", "Negación.", R.drawable.no)
+        Gesture("hola", "Hola", "Saludo básico en LSM. Muestra tu mano abierta y muévela lateralmente.", R.drawable.hola_gesto),
+        Gesture("si", "Sí", "Afirmación. Cierra tu puño y muévelo verticalmente.", R.drawable.si_gesto),
+        Gesture("no", "No", "Negación. Muestra tu pulgar hacia abajo.", R.drawable.no_gesto),
+        Gesture("bien", "Bien", "Aprobación. Muestra tu pulgar hacia arriba.", R.drawable.bien_gesto),
+        Gesture("uno", "Uno", "Número uno. Apunta hacia arriba con tu dedo índice.", R.drawable.uno_gesto),
+        Gesture("dos", "Dos", "Número dos. Muestra el gesto de victoria.", R.drawable.dos_gesto),
+        Gesture("te_amo", "Te Amo", "Expresión de amor. Muestra el gesto de te amo.", R.drawable.teamo_gesto)
     )
     
     data class Gesture(
