@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="shine" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E0E0E0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="128" cy="128" r="120" fill="url(#shine)" stroke="#9E9E9E" stroke-width="4"/>
+  <!-- Pentágono central -->
+  <polygon points="128,68 168,96 152,144 104,144 88,96" fill="#212121"/>
+  <!-- Parches -->
+  <g fill="#424242">
+    <polygon points="168,96 200,100 212,136 152,144"/>
+    <polygon points="88,96 56,100 44,136 104,144"/>
+    <polygon points="152,144 212,136 192,188 140,176"/>
+    <polygon points="104,144 44,136 64,188 116,176"/>
+    <polygon points="128,68 168,96 176,60 140,44"/>
+    <polygon points="128,68 88,96 80,60 116,44"/>
+  </g>
+</svg>

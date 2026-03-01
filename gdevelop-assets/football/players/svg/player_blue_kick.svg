@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="blueKit" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#42A5F5"/>
+      <stop offset="100%" stop-color="#1E88E5"/>
+    </linearGradient>
+  </defs>
+  <!-- Sombra -->
+  <ellipse cx="128" cy="228" rx="54" ry="13" fill="#000" opacity="0.18"/>
+  <!-- Cuerpo -->
+  <circle cx="128" cy="64" r="28" fill="#FFCC80"/>
+  <rect x="92" y="92" width="72" height="70" rx="14" fill="url(#blueKit)"/>
+  <!-- Brazos (equilibrio) -->
+  <rect x="68" y="98" width="22" height="56" rx="10" fill="#FFCC80" transform="rotate(-25 79 126)"/>
+  <rect x="166" y="98" width="22" height="56" rx="10" fill="#FFCC80" transform="rotate(25 177 126)"/>
+  <!-- Piernas (pateo) -->
+  <rect x="96" y="162" width="22" height="56" rx="10" fill="#0D47A1" transform="rotate(-10 107 190)"/>
+  <rect x="138" y="150" width="22" height="80" rx="10" fill="#0D47A1" transform="rotate(-35 149 190)"/>
+  <!-- Botas -->
+  <rect x="90" y="214" width="36" height="12" rx="6" fill="#263238"/>
+  <rect x="146" y="214" width="36" height="12" rx="6" fill="#263238" transform="rotate(-25 164 220)"/>
+  <!-- Detalles -->
+  <circle cx="128" cy="64" r="4" fill="#5D4037"/>
+</svg>

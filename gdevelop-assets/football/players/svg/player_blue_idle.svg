@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="blueKit" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#42A5F5"/>
+      <stop offset="100%" stop-color="#1E88E5"/>
+    </linearGradient>
+  </defs>
+  <!-- Sombra -->
+  <ellipse cx="128" cy="228" rx="46" ry="10" fill="#000" opacity="0.15"/>
+  <!-- Cuerpo -->
+  <circle cx="128" cy="64" r="28" fill="#FFCC80"/>
+  <rect x="92" y="92" width="72" height="70" rx="14" fill="url(#blueKit)"/>
+  <!-- Brazos -->
+  <rect x="72" y="98" width="20" height="54" rx="10" fill="#FFCC80"/>
+  <rect x="164" y="98" width="20" height="54" rx="10" fill="#FFCC80"/>
+  <!-- Piernas -->
+  <rect x="98" y="162" width="20" height="56" rx="10" fill="#0D47A1"/>
+  <rect x="138" y="162" width="20" height="56" rx="10" fill="#0D47A1"/>
+  <!-- Botas -->
+  <rect x="92" y="214" width="36" height="12" rx="6" fill="#263238"/>
+  <rect x="128" y="214" width="36" height="12" rx="6" fill="#263238"/>
+  <!-- Detalles -->
+  <circle cx="128" cy="64" r="4" fill="#5D4037"/>
+</svg>
